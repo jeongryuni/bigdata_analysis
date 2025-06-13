@@ -1,0 +1,644 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "9d795fd7",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003834,
+     "end_time": "2025-06-13T19:44:59.611154",
+     "exception": false,
+     "start_time": "2025-06-13T19:44:59.607320",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 작업형1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8b219f9d",
+   "metadata": {
+    "papermill": {
+     "duration": 0.002783,
+     "end_time": "2025-06-13T19:44:59.617466",
+     "exception": false,
+     "start_time": "2025-06-13T19:44:59.614683",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## 문제1\n",
+    "주어진 데이터는 대출에 대한 데이터이다.\n",
+    "\n",
+    "1. '대출A'와 '대출B' 컬럼을 합하여 '총대출액' 컬럼을 만든다.\n",
+    "2. 성별간 총대출액 차이의 절댓값이 가장 큰 지역코드를 구하시오."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "b0e34045",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "collapsed": true,
+    "execution": {
+     "iopub.execute_input": "2025-06-13T19:44:59.625955Z",
+     "iopub.status.busy": "2025-06-13T19:44:59.625547Z",
+     "iopub.status.idle": "2025-06-13T19:45:01.866321Z",
+     "shell.execute_reply": "2025-06-13T19:45:01.865171Z"
+    },
+    "jupyter": {
+     "outputs_hidden": true,
+     "source_hidden": true
+    },
+    "papermill": {
+     "duration": 2.246853,
+     "end_time": "2025-06-13T19:45:01.868029",
+     "exception": false,
+     "start_time": "2025-06-13T19:44:59.621176",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "성별         지역코드        0        1       차이\n",
+      "0    1000009974   706034  6580516  5874482\n",
+      "1    1000004751  1171052  6999802  5828750\n",
+      "2    1000000439  6329214   855562  5473652\n",
+      "3    1000004694  6723367  1302892  5420475\n",
+      "4    1000000799  6649992  1248654  5401338\n",
+      "..          ...      ...      ...      ...\n",
+      "145  1000003723  4624873  4510382   114491\n",
+      "146  1000004639  2653839  2541999   111840\n",
+      "147  1000006720  3250283  3346610    96327\n",
+      "148  1000007428  1561689  1650207    88518\n",
+      "149  1000005018  6161951  6132105    29846\n",
+      "\n",
+      "[150 rows x 4 columns]\n",
+      "성별\n",
+      "지역코드    1000009974\n",
+      "0           706034\n",
+      "1          6580516\n",
+      "차이         5874482\n",
+      "Name: 0, dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/loan_data.csv')\n",
+    "\n",
+    "df['총대출액'] = df['대출A'] + df['대출B']\n",
+    "\n",
+    "# 지역코드, 성별 그룹화 후 두 번째 인덱스 열(컬럼)로 지정\n",
+    "new_data = df.groupby(['지역코드', '성별'])['총대출액'].sum().unstack().reset_index()\n",
+    "new_data['차이'] = np.abs(new_data[0] - new_data[1])\n",
+    "new_data = new_data.sort_values(by='차이', ascending=False).reset_index(drop=True)\n",
+    "\n",
+    "print(new_data)\n",
+    "print(new_data.iloc[0]) # 1000009974\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "eb88c1ac",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-13T19:45:01.875966Z",
+     "iopub.status.busy": "2025-06-13T19:45:01.875632Z",
+     "iopub.status.idle": "2025-06-13T19:45:01.888478Z",
+     "shell.execute_reply": "2025-06-13T19:45:01.887403Z"
+    },
+    "papermill": {
+     "duration": 0.018557,
+     "end_time": "2025-06-13T19:45:01.890151",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:01.871594",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1000009974\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/loan_data.csv')\n",
+    "df['총대출액'] = df['대출A'] + df['대출B']\n",
+    "\n",
+    "m = df[df['성별'] == 0].groupby('지역코드')['총대출액'].sum()\n",
+    "w = df[df['성별'] == 1].groupby('지역코드')['총대출액'].sum()\n",
+    "print(np.abs(m-w).idxmax()) # 1000009974"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3b59b673",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003016,
+     "end_time": "2025-06-13T19:45:01.896589",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:01.893573",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## 문제2\n",
+    "\n",
+    "주어진 데이터는 2014~2020년까지의 범죄 관련 데이터이다.\n",
+    "\n",
+    "1. 각 연도별로 각 범죄의 검거건수를 발생건수로 나눈 검거율을 계산한다. 검거율 = 검거건수 / 발생건수\n",
+    "2. 연도별로 검거율이 가장 높은 범죄 형태의 검거건수의 총합을 계산하시오."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "1307ce31",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-13T19:45:01.904284Z",
+     "iopub.status.busy": "2025-06-13T19:45:01.904000Z",
+     "iopub.status.idle": "2025-06-13T19:45:01.930450Z",
+     "shell.execute_reply": "2025-06-13T19:45:01.929227Z"
+    },
+    "papermill": {
+     "duration": 0.032472,
+     "end_time": "2025-06-13T19:45:01.932267",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:01.899795",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2256\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/crime_data_2014_2020.csv')\n",
+    "\n",
+    "# 각 연도별로 각 범죄의 검거건수를 발생건수로 나눈 검거율 계산\n",
+    "검거건수 = df[df['구분'] == '검거건수']\n",
+    "발생건수 = df[df['구분'] == '발생건수']\n",
+    "\n",
+    "검거건수 = 검거건수.groupby('년도').sum().drop(columns = '구분')\n",
+    "발생건수 = 발생건수.groupby('년도').sum().drop(columns = '구분')\n",
+    "\n",
+    "rate = (검거건수 / 발생건수)\n",
+    "rate = rate.idxmax(axis = 1)\n",
+    "\n",
+    "'''\n",
+    "2014    범죄28\n",
+    "2015    범죄24\n",
+    "2016    범죄29\n",
+    "2017    범죄10\n",
+    "2018    범죄19\n",
+    "2019    범죄19\n",
+    "2020     범죄4\n",
+    "'''\n",
+    "검거_2014 = df.loc[(df['년도'] == 2014),'범죄28'].max()\n",
+    "검거_2015 = df.loc[(df['년도'] == 2015),'범죄24'].max()\n",
+    "검거_2016 = df.loc[(df['년도'] == 2016),'범죄29'].max()\n",
+    "검거_2017 = df.loc[(df['년도'] == 2017),'범죄10'].max()\n",
+    "검거_2018 = df.loc[(df['년도'] == 2018),'범죄19'].max()\n",
+    "검거_2019 = df.loc[(df['년도'] == 2019),'범죄19'].max()\n",
+    "검거_2020 = df.loc[(df['년도'] == 2020),'범죄4'].max()\n",
+    "\n",
+    "print(검거_2014 + 검거_2015 + 검거_2016 + 검거_2017 + 검거_2018 + 검거_2019 + 검거_2020)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21c14ab2",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00321,
+     "end_time": "2025-06-13T19:45:01.939150",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:01.935940",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## 문제3.\n",
+    "\n",
+    "1. 결측값이 존재하는 두 개의 칼럼 중 연봉'은 해당 칼럼의 평균으로 대체하고, '근속 년수'는 '부서명'과 '근무평가등급'이 같은 직원의 근속년수' 평균으로 대체한다.\n",
+    "2. 연봉을 근속년수로 나눈 칼럼과 연봉을 고객만족점수로 나눈 칼럼을 파생변수로 생성하고, 각 파생변수를 기준으로 데이터를 정렬한다.\n",
+    "3. 두 개의 파생변수를 기준으로 내림차순 정렬한 각각의 데이터에서 세 번째로 높은 데이터의 '근속년수'를 a라고 하고,\n",
+    "4. 두 번째로 높은 데이터의 교육참가시간수'를 b라 고 할 때, a+b의 합을 구하시오. (단, 출력값을 정수 형태로 제출한다.)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "3d6f5014",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-13T19:45:01.947989Z",
+     "iopub.status.busy": "2025-06-13T19:45:01.947558Z",
+     "iopub.status.idle": "2025-06-13T19:45:01.984386Z",
+     "shell.execute_reply": "2025-06-13T19:45:01.983151Z"
+    },
+    "papermill": {
+     "duration": 0.044285,
+     "end_time": "2025-06-13T19:45:01.986709",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:01.942424",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "81.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import warnings\n",
+    "warnings.filterwarnings('ignore')  # 경고 메시지 무시\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/employee_data_with_grades.csv')\n",
+    "\n",
+    "# 1. 연봉 -> 해당칼럼의 평균으로 대체\n",
+    "mean = df['연봉'].mean()\n",
+    "df['연봉'] = df['연봉'].fillna(mean)\n",
+    "# 근속년수는 '부서명'과 '근무평가등급'이 같은 직원의 근속년수 평균으로 대체\n",
+    "df['근속년수'] = df.groupby(['부서명','근무평가등급'])['근속년수'].transform(lambda x : x.fillna(x.mean()))\n",
+    "\n",
+    "# 2. 연봉을 근속년수로 나눈 칼럼과 연봉을 고객만족점수로 나눈 칼럼을 파생변수로 생성 파생변수를 기준으로 데이터를 정렬\n",
+    "df['연봉_근속'] = df['연봉'] / df['근속년수']\n",
+    "df['연봉_고객'] = df['연봉'] / df['고객만족점수']\n",
+    "\n",
+    "a = df.sort_values(by ='연봉_근속', ascending=False).reset_index().iloc[2]['근속년수']\n",
+    "b = df.sort_values(by ='연봉_고객', ascending=False).reset_index().iloc[1]['교육참가시간수']\n",
+    "\n",
+    "print(a + b)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f27e916c",
+   "metadata": {
+    "papermill": {
+     "duration": 0.002977,
+     "end_time": "2025-06-13T19:45:01.993838",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:01.990861",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 작업형2\n",
+    "\n",
+    "1. 주어진 데이터의 상위 700개의 데이터를 train 데이터로 사용하고, 나머지 데이터 를 test 데이터로 활용한다.\n",
+    "2. 제공된 데이터를 이용하여 '운동 경험 수준(Experience_Level)'을 예측하는 모델을 개발하고, 개발한 모델을 평가용 test 데이터에 적용하여 얻은 예측 결과를 csv 파일 로 생성하여 제출한다.\n",
+    "3. 예측 결과는 f1-score macro 평가지표에 따라 평가하고, 평가용 데이터(test) 개수 와 예측 결과 데이터의 개수는 273개로 일치해야 한다.\n",
+    "4. 예측 결과 파일명은 9th_test_type2.csv로 하고, 칼럼명은 pred 하나만 존재하도 록 한다"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "46a1cfe2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-13T19:45:02.002150Z",
+     "iopub.status.busy": "2025-06-13T19:45:02.001468Z",
+     "iopub.status.idle": "2025-06-13T19:45:04.660351Z",
+     "shell.execute_reply": "2025-06-13T19:45:04.659201Z"
+    },
+    "papermill": {
+     "duration": 2.665411,
+     "end_time": "2025-06-13T19:45:04.662700",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:01.997289",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "     pred\n",
+      "0    1.58\n",
+      "1    2.00\n",
+      "2    1.68\n",
+      "3    2.00\n",
+      "4    1.70\n",
+      "..    ...\n",
+      "268  3.00\n",
+      "269  1.00\n",
+      "270  3.00\n",
+      "271  1.76\n",
+      "272  1.00\n",
+      "\n",
+      "[273 rows x 1 columns]\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/gym_members_exercise_tracking.csv')\n",
+    "train = df.iloc[:700]\n",
+    "test = df.iloc[700:]\n",
+    "y = train['Experience_Level']\n",
+    "\n",
+    "train_drop = train.drop(columns = 'Experience_Level')\n",
+    "test_drop = test.drop(columns = 'Experience_Level')\n",
+    "# 운동 경험 수준 예측 Experience_Level\n",
+    "\n",
+    "# 인코딩\n",
+    "train_dummies = pd.get_dummies(train_drop)\n",
+    "test_dummies = pd.get_dummies(test_drop)\n",
+    "\n",
+    "# 랜덤포레스트\n",
+    "from sklearn.ensemble import RandomForestRegressor\n",
+    "model = RandomForestRegressor()\n",
+    "model.fit(train_dummies, y)\n",
+    "pred = model.predict(test_dummies)\n",
+    "\n",
+    "result = pd.DataFrame({'pred' : pred})\n",
+    "result.to_csv('9th_test_type2.csv', index=False)\n",
+    "read_file = pd.read_csv('9th_test_type2.csv')\n",
+    "print(read_file)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0b0f397c",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003187,
+     "end_time": "2025-06-13T19:45:04.669390",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:04.666203",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 작업형3"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "285240f4",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003589,
+     "end_time": "2025-06-13T19:45:04.677355",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:04.673766",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## 문제1\n",
+    "주어진 부동산 데이터를 활용하여 '주택가격_만원'을 예측하고자 한다. 각 문항의 답을 제출 형식의 맞춰 제출하시오.\n",
+    "\n",
+    "1. train 데이터를 활용하여 다중 선형 회귀 분석을 진행하고, 유의미한 독립변수의 개 수를 출력하시오.\n",
+    "2. 1번 문제에서 확인된 유의미한 독립변수만을 활용하여 다시 train 데이터의 다중 선 형 회귀 분석을 진행하고, 해당 모델로 예측한 값의 피어슨 상관계수를 구하시오.\n",
+    "3. 2번 문제에서 생성된 다중 선형 회귀 분석 모델에 test 데이터를 적용하여 종속변수 를 예측하고, 예측값의 RMSE 수치를 구하시오.\n",
+    "\n",
+    "(단, 전체 데이터에서 train 데이터 는 상위 800행, test 데이터는 하위 200행으로 나누어 작업하고, 연산 결과는 소수 점 4번째 자리에서 반올림하여 소수점 3자리까지 입력한다.)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "ab8df7fe",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-13T19:45:04.685855Z",
+     "iopub.status.busy": "2025-06-13T19:45:04.685414Z",
+     "iopub.status.idle": "2025-06-13T19:45:05.664548Z",
+     "shell.execute_reply": "2025-06-13T19:45:05.663393Z"
+    },
+    "papermill": {
+     "duration": 0.985358,
+     "end_time": "2025-06-13T19:45:05.666249",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:04.680891",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.888\n",
+      "10022.407\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/real_estate_data.csv')\n",
+    "\n",
+    "train = df.iloc[:800]\n",
+    "test = df.iloc[800:]\n",
+    "y = train['주택가격_만원']\n",
+    "\n",
+    "# 유의미한 독립변수\n",
+    "from statsmodels.formula.api import ols\n",
+    "formula = ('주택가격_만원 ~ 주택면적_제곱미터 + 건축년도 + 방_수 + 화장실_수 + 층수')\n",
+    "model = ols(formula,data=train).fit()\n",
+    "# print(model.pvalues < 0.05) # 2개 주택면적_제곱미터, 건축년도\n",
+    "\n",
+    "\n",
+    "from statsmodels.formula.api import ols\n",
+    "formula2 = ('주택가격_만원 ~ 주택면적_제곱미터 + 건축년도')\n",
+    "model2 = ols(formula2,data=train).fit()\n",
+    "\n",
+    "pred = model2.predict(train)\n",
+    "from scipy import stats\n",
+    "st, pv = stats.pearsonr(y, pred)\n",
+    "print(round(st, 3)) #피어슨 상관계수\n",
+    "\n",
+    "from sklearn.metrics import mean_squared_error\n",
+    "test_y = test['주택가격_만원']\n",
+    "pred_test = model2.predict(test)\n",
+    "rmse = mean_squared_error(test_y,pred_test, squared=False)\n",
+    "print(round(rmse, 4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fa212abe",
+   "metadata": {
+    "papermill": {
+     "duration": 0.003238,
+     "end_time": "2025-06-13T19:45:05.673191",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:05.669953",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## 문제2\n",
+    "\n",
+    "1. 로지스틱 회귀분석을 통해 '근무시간_주당' 컬럼의 p_value를 구하시오.\n",
+    "2. [문제 1]의 로지스틱 회귀 분석 결과에서 '자녀 수' 변수가 한 단위 증가할 때 대출 승인에 대한 오즈비를 연산하시오\n",
+    "3. [문제 1]의 로지스틱 회귀 모델로 종속변수를 예측했을 때, '대출승인여부'가 1일 확률이 0.3을 초과하는 데이터의 개수를 연산하시오\n",
+    "\n",
+    "(단, 연산 결과는 소수점 4번째 자리에서 반올림하여 소수점 3자리까지 입력하고, 벌점화(penalty)는 부여하지 않는다.)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "15e48a7b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-13T19:45:05.682305Z",
+     "iopub.status.busy": "2025-06-13T19:45:05.681692Z",
+     "iopub.status.idle": "2025-06-13T19:45:05.758168Z",
+     "shell.execute_reply": "2025-06-13T19:45:05.757207Z"
+    },
+    "papermill": {
+     "duration": 0.082803,
+     "end_time": "2025-06-13T19:45:05.759908",
+     "exception": false,
+     "start_time": "2025-06-13T19:45:05.677105",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Optimization terminated successfully.\n",
+      "         Current function value: 0.438136\n",
+      "         Iterations 7\n",
+      "0.158\n",
+      "1.021\n",
+      "630\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "from scipy import stats\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/loan_approval_data.csv')\n",
+    "\n",
+    "from statsmodels.formula.api import logit\n",
+    "formula = ('대출승인여부 ~ 나이 + 소득_만원 + 근무시간_주당 + 자녀수 + 신용등급')\n",
+    "model = logit(formula, data=df).fit()\n",
+    "# print(model.summary()) \n",
+    "\n",
+    "# 근무시간_주당 컬럼의 p_value\n",
+    "print(0.158)# 0.158\n",
+    "\n",
+    "# 자녀수 변수가 한 단위 증가할때마다 대출 승인에 대한 오즈비\n",
+    "odds_ratio = np.exp(model.params['자녀수'])\n",
+    "print(round(odds_ratio, 3))\n",
+    "\n",
+    "# 종속변수를 예측했을 때, '대출승인여부'가 1일 확률이 0.3을 초과하는 데이터의 개수를 연산\n",
+    "pred = model.predict(df)\n",
+    "print((pred > 0.3).sum()) #630"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 7611297,
+     "sourceId": 12090743,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 31040,
+   "isGpuEnabled": false,
+   "isInternetEnabled": false,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.11"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 12.110235,
+   "end_time": "2025-06-13T19:45:06.486849",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2025-06-13T19:44:54.376614",
+   "version": "2.6.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
