@@ -2,13 +2,13 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "9d795fd7",
+   "id": "f645c80a",
    "metadata": {
     "papermill": {
-     "duration": 0.003834,
-     "end_time": "2025-06-13T19:44:59.611154",
+     "duration": 0.004889,
+     "end_time": "2025-06-18T20:49:58.332821",
      "exception": false,
-     "start_time": "2025-06-13T19:44:59.607320",
+     "start_time": "2025-06-18T20:49:58.327932",
      "status": "completed"
     },
     "tags": []
@@ -19,13 +19,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8b219f9d",
+   "id": "d7ea5496",
    "metadata": {
     "papermill": {
-     "duration": 0.002783,
-     "end_time": "2025-06-13T19:44:59.617466",
+     "duration": 0.00377,
+     "end_time": "2025-06-18T20:49:58.341235",
      "exception": false,
-     "start_time": "2025-06-13T19:44:59.614683",
+     "start_time": "2025-06-18T20:49:58.337465",
      "status": "completed"
     },
     "tags": []
@@ -41,26 +41,126 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "b0e34045",
+   "id": "7311de31",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-18T20:49:58.350765Z",
+     "iopub.status.busy": "2025-06-18T20:49:58.350351Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.244534Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.243530Z"
+    },
+    "papermill": {
+     "duration": 1.900822,
+     "end_time": "2025-06-18T20:50:00.246129",
+     "exception": false,
+     "start_time": "2025-06-18T20:49:58.345307",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1000009974\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/loan_data.csv')\n",
+    "df['총대출액'] = df['대출A'] + df['대출B']\n",
+    "gender_0 = df[df['성별'] == 0]\n",
+    "gender_1 = df[df['성별'] == 1]\n",
+    "\n",
+    "cond0 = gender_0.groupby('지역코드')['총대출액'].sum()\n",
+    "cond1 = gender_1.groupby('지역코드')['총대출액'].sum()\n",
+    "result = np.abs(cond0 - cond1)\n",
+    "\n",
+    "print(result.idxmax()) # 1000009974"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "c2f29967",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-18T20:50:00.255931Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.255650Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.285361Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.284392Z"
+    },
+    "papermill": {
+     "duration": 0.036672,
+     "end_time": "2025-06-18T20:50:00.287072",
+     "exception": false,
+     "start_time": "2025-06-18T20:50:00.250400",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "성별                0        1     금액차이\n",
+      "지역코드                                 \n",
+      "1000009974   706034  6580516  5874482\n",
+      "1000004751  1171052  6999802  5828750\n",
+      "1000000439  6329214   855562  5473652\n",
+      "1000004694  6723367  1302892  5420475\n",
+      "1000000799  6649992  1248654  5401338\n",
+      "...             ...      ...      ...\n",
+      "1000003723  4624873  4510382   114491\n",
+      "1000004639  2653839  2541999   111840\n",
+      "1000006720  3250283  3346610    96327\n",
+      "1000007428  1561689  1650207    88518\n",
+      "1000005018  6161951  6132105    29846\n",
+      "\n",
+      "[150 rows x 3 columns]\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/loan_data.csv')\n",
+    "df['총대출액'] = df['대출A'] + df['대출B']\n",
+    "\n",
+    "df = df.groupby(['지역코드','성별'])['총대출액'].sum().unstack()\n",
+    "df['금액차이'] = np.abs(df[0] - df[1])\n",
+    "df = df.sort_values(by = '금액차이', ascending = False)\n",
+    "print(df) # 1000009974"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "09ae0627",
    "metadata": {
     "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
     "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
     "collapsed": true,
     "execution": {
-     "iopub.execute_input": "2025-06-13T19:44:59.625955Z",
-     "iopub.status.busy": "2025-06-13T19:44:59.625547Z",
-     "iopub.status.idle": "2025-06-13T19:45:01.866321Z",
-     "shell.execute_reply": "2025-06-13T19:45:01.865171Z"
+     "iopub.execute_input": "2025-06-18T20:50:00.296931Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.296643Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.312909Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.311782Z"
     },
     "jupyter": {
-     "outputs_hidden": true,
-     "source_hidden": true
+     "outputs_hidden": true
     },
     "papermill": {
-     "duration": 2.246853,
-     "end_time": "2025-06-13T19:45:01.868029",
+     "duration": 0.023313,
+     "end_time": "2025-06-18T20:50:00.314824",
      "exception": false,
-     "start_time": "2025-06-13T19:44:59.621176",
+     "start_time": "2025-06-18T20:50:00.291511",
      "status": "completed"
     },
     "tags": []
@@ -112,20 +212,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
-   "id": "eb88c1ac",
+   "execution_count": 4,
+   "id": "890954cc",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-06-13T19:45:01.875966Z",
-     "iopub.status.busy": "2025-06-13T19:45:01.875632Z",
-     "iopub.status.idle": "2025-06-13T19:45:01.888478Z",
-     "shell.execute_reply": "2025-06-13T19:45:01.887403Z"
+     "iopub.execute_input": "2025-06-18T20:50:00.325234Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.324912Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.337370Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.336219Z"
     },
     "papermill": {
-     "duration": 0.018557,
-     "end_time": "2025-06-13T19:45:01.890151",
+     "duration": 0.019505,
+     "end_time": "2025-06-18T20:50:00.339036",
      "exception": false,
-     "start_time": "2025-06-13T19:45:01.871594",
+     "start_time": "2025-06-18T20:50:00.319531",
      "status": "completed"
     },
     "tags": []
@@ -153,13 +253,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3b59b673",
+   "id": "ad11d1d1",
    "metadata": {
     "papermill": {
-     "duration": 0.003016,
-     "end_time": "2025-06-13T19:45:01.896589",
+     "duration": 0.004116,
+     "end_time": "2025-06-18T20:50:00.347564",
      "exception": false,
-     "start_time": "2025-06-13T19:45:01.893573",
+     "start_time": "2025-06-18T20:50:00.343448",
      "status": "completed"
     },
     "tags": []
@@ -175,20 +275,68 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
-   "id": "1307ce31",
+   "execution_count": 5,
+   "id": "7f609799",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-06-13T19:45:01.904284Z",
-     "iopub.status.busy": "2025-06-13T19:45:01.904000Z",
-     "iopub.status.idle": "2025-06-13T19:45:01.930450Z",
-     "shell.execute_reply": "2025-06-13T19:45:01.929227Z"
+     "iopub.execute_input": "2025-06-18T20:50:00.357703Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.357072Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.378489Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.377414Z"
     },
     "papermill": {
-     "duration": 0.032472,
-     "end_time": "2025-06-13T19:45:01.932267",
+     "duration": 0.028286,
+     "end_time": "2025-06-18T20:50:00.380109",
      "exception": false,
-     "start_time": "2025-06-13T19:45:01.899795",
+     "start_time": "2025-06-18T20:50:00.351823",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2256\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/crime_data_2014_2020.csv')\n",
+    "\n",
+    "발생건수 = df[df['구분'] == '발생건수'].drop(columns = '구분').groupby('년도').sum()\n",
+    "검거건수 = df[df['구분'] == '검거건수'].drop(columns = '구분').groupby('년도').sum()\n",
+    "\n",
+    "검거율 = 검거건수 / 발생건수\n",
+    "검거율_max = (검거율.idxmax(axis=1))\n",
+    "\n",
+    "result = 0\n",
+    "for year in 검거건수.index:\n",
+    "    crime = 검거율_max[year]\n",
+    "    result += 검거건수.loc[year, crime]\n",
+    "print(result)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "78dad92b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-18T20:50:00.390463Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.390137Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.412750Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.411732Z"
+    },
+    "papermill": {
+     "duration": 0.029566,
+     "end_time": "2025-06-18T20:50:00.414308",
+     "exception": false,
+     "start_time": "2025-06-18T20:50:00.384742",
      "status": "completed"
     },
     "tags": []
@@ -240,13 +388,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "21c14ab2",
+   "id": "04546298",
    "metadata": {
     "papermill": {
-     "duration": 0.00321,
-     "end_time": "2025-06-13T19:45:01.939150",
+     "duration": 0.004453,
+     "end_time": "2025-06-18T20:50:00.423298",
      "exception": false,
-     "start_time": "2025-06-13T19:45:01.935940",
+     "start_time": "2025-06-18T20:50:00.418845",
      "status": "completed"
     },
     "tags": []
@@ -256,26 +404,78 @@
     "\n",
     "1. 결측값이 존재하는 두 개의 칼럼 중 연봉'은 해당 칼럼의 평균으로 대체하고, '근속 년수'는 '부서명'과 '근무평가등급'이 같은 직원의 근속년수' 평균으로 대체한다.\n",
     "2. 연봉을 근속년수로 나눈 칼럼과 연봉을 고객만족점수로 나눈 칼럼을 파생변수로 생성하고, 각 파생변수를 기준으로 데이터를 정렬한다.\n",
-    "3. 두 개의 파생변수를 기준으로 내림차순 정렬한 각각의 데이터에서 세 번째로 높은 데이터의 '근속년수'를 a라고 하고,\n",
-    "4. 두 번째로 높은 데이터의 교육참가시간수'를 b라 고 할 때, a+b의 합을 구하시오. (단, 출력값을 정수 형태로 제출한다.)"
+    "3. 두 개의 파생변수를 기준으로 내림차순 정렬한 각각의 데이터에서 세 번째로 높은 데이터의 '근속년수'를 a라고 하고, 두 번째로 높은 데이터의 교육참가시간수'를 b라 고 할 때, a+b의 합을 구하시오. (단, 출력값을 정수 형태로 제출한다.)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
-   "id": "3d6f5014",
+   "execution_count": 7,
+   "id": "e971712c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-06-13T19:45:01.947989Z",
-     "iopub.status.busy": "2025-06-13T19:45:01.947558Z",
-     "iopub.status.idle": "2025-06-13T19:45:01.984386Z",
-     "shell.execute_reply": "2025-06-13T19:45:01.983151Z"
+     "iopub.execute_input": "2025-06-18T20:50:00.433535Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.433217Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.468174Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.467276Z"
     },
     "papermill": {
-     "duration": 0.044285,
-     "end_time": "2025-06-13T19:45:01.986709",
+     "duration": 0.042112,
+     "end_time": "2025-06-18T20:50:00.469783",
      "exception": false,
-     "start_time": "2025-06-13T19:45:01.942424",
+     "start_time": "2025-06-18T20:50:00.427671",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "81\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import warnings\n",
+    "warnings.filterwarnings('ignore')  # 경고 메시지 무시\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/employee_data_with_grades.csv')\n",
+    "\n",
+    "# 1.\n",
+    "# 연봉 결측채 : 연봉평균\n",
+    "df['연봉'] = df['연봉'].fillna(df['연봉'].mean())\n",
+    "# 근속년수 : 부서명과 근무평가등급이 같은 직원의 근속년수 평균\n",
+    "df['근속년수'] = df.groupby(['부서명', '근무평가등급'])['근속년수'].transform(lambda x : x.fillna(x.mean()))\n",
+    "\n",
+    "# 2. \n",
+    "df['연봉_근속'] = df['연봉'] / df['근속년수']\n",
+    "df['연봉_고객'] = df['연봉'] / df['고객만족점수']\n",
+    "\n",
+    "a = df.sort_values(by ='연봉_근속', ascending=False).reset_index().iloc[2]['근속년수']\n",
+    "b = df.sort_values(by ='연봉_고객', ascending=False).reset_index().iloc[1]['교육참가시간수']\n",
+    "\n",
+    "print(int(a + b))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "fe04ed08",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-18T20:50:00.479944Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.479653Z",
+     "iopub.status.idle": "2025-06-18T20:50:00.501819Z",
+     "shell.execute_reply": "2025-06-18T20:50:00.500634Z"
+    },
+    "papermill": {
+     "duration": 0.029542,
+     "end_time": "2025-06-18T20:50:00.503778",
+     "exception": false,
+     "start_time": "2025-06-18T20:50:00.474236",
      "status": "completed"
     },
     "tags": []
@@ -315,13 +515,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f27e916c",
+   "id": "36665e08",
    "metadata": {
     "papermill": {
-     "duration": 0.002977,
-     "end_time": "2025-06-13T19:45:01.993838",
+     "duration": 0.004283,
+     "end_time": "2025-06-18T20:50:00.513538",
      "exception": false,
-     "start_time": "2025-06-13T19:45:01.990861",
+     "start_time": "2025-06-18T20:50:00.509255",
      "status": "completed"
     },
     "tags": []
@@ -337,20 +537,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
-   "id": "46a1cfe2",
+   "execution_count": 9,
+   "id": "5e856d5a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-06-13T19:45:02.002150Z",
-     "iopub.status.busy": "2025-06-13T19:45:02.001468Z",
-     "iopub.status.idle": "2025-06-13T19:45:04.660351Z",
-     "shell.execute_reply": "2025-06-13T19:45:04.659201Z"
+     "iopub.execute_input": "2025-06-18T20:50:00.523635Z",
+     "iopub.status.busy": "2025-06-18T20:50:00.523331Z",
+     "iopub.status.idle": "2025-06-18T20:50:02.883995Z",
+     "shell.execute_reply": "2025-06-18T20:50:02.882856Z"
     },
     "papermill": {
-     "duration": 2.665411,
-     "end_time": "2025-06-13T19:45:04.662700",
+     "duration": 2.367478,
+     "end_time": "2025-06-18T20:50:02.885475",
      "exception": false,
-     "start_time": "2025-06-13T19:45:01.997289",
+     "start_time": "2025-06-18T20:50:00.517997",
      "status": "completed"
     },
     "tags": []
@@ -361,16 +561,16 @@
      "output_type": "stream",
      "text": [
       "     pred\n",
-      "0    1.58\n",
+      "0    1.67\n",
       "1    2.00\n",
-      "2    1.68\n",
+      "2    1.80\n",
       "3    2.00\n",
-      "4    1.70\n",
+      "4    1.63\n",
       "..    ...\n",
       "268  3.00\n",
       "269  1.00\n",
       "270  3.00\n",
-      "271  1.76\n",
+      "271  1.81\n",
       "272  1.00\n",
       "\n",
       "[273 rows x 1 columns]\n"
@@ -408,13 +608,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0b0f397c",
+   "id": "756bc8a6",
    "metadata": {
     "papermill": {
-     "duration": 0.003187,
-     "end_time": "2025-06-13T19:45:04.669390",
+     "duration": 0.004108,
+     "end_time": "2025-06-18T20:50:02.894724",
      "exception": false,
-     "start_time": "2025-06-13T19:45:04.666203",
+     "start_time": "2025-06-18T20:50:02.890616",
      "status": "completed"
     },
     "tags": []
@@ -425,13 +625,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "285240f4",
+   "id": "f93cf20f",
    "metadata": {
     "papermill": {
-     "duration": 0.003589,
-     "end_time": "2025-06-13T19:45:04.677355",
+     "duration": 0.004191,
+     "end_time": "2025-06-18T20:50:02.903362",
      "exception": false,
-     "start_time": "2025-06-13T19:45:04.673766",
+     "start_time": "2025-06-18T20:50:02.899171",
      "status": "completed"
     },
     "tags": []
@@ -449,20 +649,87 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
-   "id": "ab8df7fe",
+   "execution_count": 10,
+   "id": "6e34a4d5",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-06-13T19:45:04.685855Z",
-     "iopub.status.busy": "2025-06-13T19:45:04.685414Z",
-     "iopub.status.idle": "2025-06-13T19:45:05.664548Z",
-     "shell.execute_reply": "2025-06-13T19:45:05.663393Z"
+     "iopub.execute_input": "2025-06-18T20:50:02.913427Z",
+     "iopub.status.busy": "2025-06-18T20:50:02.913106Z",
+     "iopub.status.idle": "2025-06-18T20:50:03.780182Z",
+     "shell.execute_reply": "2025-06-18T20:50:03.779308Z"
     },
     "papermill": {
-     "duration": 0.985358,
-     "end_time": "2025-06-13T19:45:05.666249",
+     "duration": 0.874048,
+     "end_time": "2025-06-18T20:50:03.781772",
      "exception": false,
-     "start_time": "2025-06-13T19:45:04.680891",
+     "start_time": "2025-06-18T20:50:02.907724",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Intercept     True\n",
+      "주택면적_제곱미터     True\n",
+      "건축년도          True\n",
+      "방_수          False\n",
+      "화장실_수        False\n",
+      "층수           False\n",
+      "dtype: bool\n",
+      "0.8878\n",
+      "10022.407\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "from statsmodels.formula.api import ols\n",
+    "from scipy import stats\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/real_estate_data.csv')\n",
+    "train = df[:800]\n",
+    "test = df[800:]\n",
+    "\n",
+    "# 1.\n",
+    "formula = ('주택가격_만원 ~ 주택면적_제곱미터 + 건축년도 + 방_수 + 화장실_수 + 층수')\n",
+    "model = ols(formula, data = train).fit()\n",
+    "print(model.pvalues < 0.05) #주택면적_제곱미터, 건축년도  2개\n",
+    "\n",
+    "# 2. \n",
+    "formula = ('주택가격_만원 ~ 주택면적_제곱미터 + 건축년도')\n",
+    "model = ols(formula, data = train).fit()\n",
+    "pred = model.predict(train)\n",
+    "corr = df['주택가격_만원'].corr(pred)\n",
+    "print(round(corr,4 )) #0.8878\n",
+    "\n",
+    "# 3.\n",
+    "from sklearn.metrics import mean_squared_error\n",
+    "y_test = test['주택가격_만원']\n",
+    "pred_test = model.predict(test)\n",
+    "rmse_result = mean_squared_error(y_test, pred_test, squared = False)\n",
+    "print(round(rmse_result, 4))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "993c8dbf",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-18T20:50:03.794485Z",
+     "iopub.status.busy": "2025-06-18T20:50:03.794133Z",
+     "iopub.status.idle": "2025-06-18T20:50:03.833075Z",
+     "shell.execute_reply": "2025-06-18T20:50:03.832046Z"
+    },
+    "papermill": {
+     "duration": 0.048293,
+     "end_time": "2025-06-18T20:50:03.834713",
+     "exception": false,
+     "start_time": "2025-06-18T20:50:03.786420",
      "status": "completed"
     },
     "tags": []
@@ -513,13 +780,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "fa212abe",
+   "id": "475a93e5",
    "metadata": {
     "papermill": {
-     "duration": 0.003238,
-     "end_time": "2025-06-13T19:45:05.673191",
+     "duration": 0.004506,
+     "end_time": "2025-06-18T20:50:03.843953",
      "exception": false,
-     "start_time": "2025-06-13T19:45:05.669953",
+     "start_time": "2025-06-18T20:50:03.839447",
      "status": "completed"
     },
     "tags": []
@@ -528,7 +795,7 @@
     "## 문제2\n",
     "\n",
     "1. 로지스틱 회귀분석을 통해 '근무시간_주당' 컬럼의 p_value를 구하시오.\n",
-    "2. [문제 1]의 로지스틱 회귀 분석 결과에서 '자녀 수' 변수가 한 단위 증가할 때 대출 승인에 대한 오즈비를 연산하시오\n",
+    "2. [문제 1]의 로지스틱 회귀 분석 결과에서 '자녀수' 변수가 한 단위 증가할 때 대출 승인에 대한 오즈비를 연산하시오\n",
     "3. [문제 1]의 로지스틱 회귀 모델로 종속변수를 예측했을 때, '대출승인여부'가 1일 확률이 0.3을 초과하는 데이터의 개수를 연산하시오\n",
     "\n",
     "(단, 연산 결과는 소수점 4번째 자리에서 반올림하여 소수점 3자리까지 입력하고, 벌점화(penalty)는 부여하지 않는다.)"
@@ -536,20 +803,75 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
-   "id": "15e48a7b",
+   "execution_count": 12,
+   "id": "c937e60e",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-06-13T19:45:05.682305Z",
-     "iopub.status.busy": "2025-06-13T19:45:05.681692Z",
-     "iopub.status.idle": "2025-06-13T19:45:05.758168Z",
-     "shell.execute_reply": "2025-06-13T19:45:05.757207Z"
+     "iopub.execute_input": "2025-06-18T20:50:03.854810Z",
+     "iopub.status.busy": "2025-06-18T20:50:03.854378Z",
+     "iopub.status.idle": "2025-06-18T20:50:03.921815Z",
+     "shell.execute_reply": "2025-06-18T20:50:03.920510Z"
     },
     "papermill": {
-     "duration": 0.082803,
-     "end_time": "2025-06-13T19:45:05.759908",
+     "duration": 0.075071,
+     "end_time": "2025-06-18T20:50:03.923789",
      "exception": false,
-     "start_time": "2025-06-13T19:45:05.677105",
+     "start_time": "2025-06-18T20:50:03.848718",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Optimization terminated successfully.\n",
+      "         Current function value: 0.438136\n",
+      "         Iterations 7\n",
+      "0.158\n",
+      "1.0209062489389313\n",
+      "630\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "from scipy import stats\n",
+    "from statsmodels.formula.api import logit\n",
+    "\n",
+    "df = pd.read_csv('/kaggle/input/bigdata-csvfile/loan_approval_data.csv')\n",
+    "\n",
+    "# 1.\n",
+    "formula = ('대출승인여부 ~ 나이 + 소득_만원 + 근무시간_주당 + 자녀수 + 신용등급')\n",
+    "model = logit(formula, data = df).fit()\n",
+    "print(round(model.pvalues['근무시간_주당'],3))\n",
+    "\n",
+    "# 2.\n",
+    "print(np.exp(model.params['자녀수']))\n",
+    "\n",
+    "# 3.\n",
+    "pred = model.predict(df)\n",
+    "print((pred > 0.3).sum())\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "f66e7a4e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-06-18T20:50:03.935261Z",
+     "iopub.status.busy": "2025-06-18T20:50:03.934481Z",
+     "iopub.status.idle": "2025-06-18T20:50:03.969159Z",
+     "shell.execute_reply": "2025-06-18T20:50:03.967814Z"
+    },
+    "papermill": {
+     "duration": 0.042346,
+     "end_time": "2025-06-18T20:50:03.971040",
+     "exception": false,
+     "start_time": "2025-06-18T20:50:03.928694",
      "status": "completed"
     },
     "tags": []
@@ -591,6 +913,23 @@
     "pred = model.predict(df)\n",
     "print((pred > 0.3).sum()) #630"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "feafd782",
+   "metadata": {
+    "papermill": {
+     "duration": 0.004777,
+     "end_time": "2025-06-18T20:50:03.981303",
+     "exception": false,
+     "start_time": "2025-06-18T20:50:03.976526",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {
@@ -628,14 +967,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 12.110235,
-   "end_time": "2025-06-13T19:45:06.486849",
+   "duration": 11.101856,
+   "end_time": "2025-06-18T20:50:04.706361",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2025-06-13T19:44:54.376614",
+   "start_time": "2025-06-18T20:49:53.604505",
    "version": "2.6.0"
   }
  },
